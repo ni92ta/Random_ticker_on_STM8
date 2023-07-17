@@ -78,7 +78,7 @@ for ( ip = 0; ip < 20000; ++ip)
 				{
           GPIOC->ODR = eff111[l];// & 0b11111000;
 					GPIOD->ODR &= ~(1<<6);
-					delay (300);
+					delay (300);//
 					GPIOD->ODR |= (1<<6);
 					l--;
 	 	 			y++;
