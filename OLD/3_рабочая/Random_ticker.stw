@@ -1,0 +1,12 @@
+;	STMicroelectronics Workspace file
+
+[Version]
+Keyword=ST7Workspace-V0.7
+
+[Project0]
+Filename=random_ticker.stp
+Dependencies=
+[Options]
+ActiveProject=random_ticker
+ActiveConfig=Debug
+AddSortedElements=1

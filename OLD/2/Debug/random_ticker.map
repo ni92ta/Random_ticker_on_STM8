@@ -1,0 +1,135 @@
+
+Map of Debug\random_ticker.sm8 from link file Debug\random_ticker.lkf - Mon Jul  3 18:01:01 2023
+
+
+                               --------
+                               Segments
+                               --------
+
+start 00008080 end 00008080 length     0 segment .const
+start 000080ed end 00008246 length   345 segment .text
+start 00004000 end 00004000 length     0 segment .eeprom
+start 00000000 end 00000065 length   101 segment .bsct, initialized
+start 00008088 end 000080ed length   101 segment .bsct, from
+start 00000065 end 000000d3 length   110 segment .ubsct
+start 000000d3 end 000000d3 length     0 segment .bit
+start 000000d3 end 000000d3 length     0 segment .share
+start 00000100 end 00000100 length     0 segment .data
+start 00000100 end 00000100 length     0 segment .bss
+start 00000000 end 000001b6 length   438 segment .info.
+start 00000000 end 0000048a length  1162 segment .debug
+start 00008000 end 00008080 length   128 segment .const
+start 00008080 end 00008088 length     8 segment .init
+
+
+                               -------
+                               Modules
+                               -------
+
+C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8:
+start 000080ed end 0000813d length    80 section .text
+start 00000100 end 00000100 length     0 section .bss
+start 00000065 end 00000065 length     0 section .ubsct
+start 00000000 end 00000034 length    52 section .info.
+
+Debug\main.o:
+start 0000813d end 00008245 length   264 section .text
+start 00000000 end 00000065 length   101 section .bsct
+start 00000065 end 000000cd length   104 section .ubsct
+start 00000000 end 0000031f length   799 section .debug
+start 00000034 end 000000a0 length   108 section .info.
+
+(C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)xreg.o:
+start 000000cd end 000000d0 length     3 section .ubsct
+start 000000a0 end 000000cf length    47 section .info.
+
+(C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)yreg.o:
+start 000000d0 end 000000d3 length     3 section .ubsct
+start 000000cf end 000000fe length    47 section .info.
+
+Debug\stm8_interrupt_vector.o:
+start 00008245 end 00008246 length     1 section .text
+start 0000031f end 0000048a length   363 section .debug
+start 000000fe end 0000017b length   125 section .info.
+start 00008000 end 00008080 length   128 section .const
+
+
+                             -----------
+                             Stack usage
+                             -----------
+
+Debug\main.o:
+_clear_matrix          >    3   (3)
+_delay                      4   (4)
+_fraim_out             >    6   (2)
+_main                  >    7   (2)
+_raand                      5   (5)
+
+Debug\stm8_interrupt_vector.o:
+f_NonHandledInterrupt  >    6   (6)
+
+Stack size: 13
+
+
+                              ---------
+                              Call tree
+                              ---------
+   1 > __stext: (0)
+
+   2 > _clear_matrix: (3)
+
+   3 > _fraim_out: (2)
+   4      + _delay: (4)
+       
+   5 > _main: (2)
+   6      + _raand: (5)
+       
+   7 > f_NonHandledInterrupt: (6)
+
+   8   _delay --> 4
+
+   9   _raand --> 6
+
+
+
+                               -------
+                               Symbols
+                               -------
+
+__endmem                000001ff   defined in command file
+                                   *** not used ***
+__endzp                 000000d3   defined in command file section .ubsct
+                                   used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+__idesc__               00008080   defined in linker section .init
+                                   used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+__memory                00000100   defined in command file section .bss
+                                   used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+__stack                 000003ff   defined in command file
+                                   used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+__startmem              00000100   defined in command file section .bss
+                                   *** not used ***
+__stext                 000080ed   defined in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8 section .text
+                                   used in Debug\stm8_interrupt_vector.o
+__vectab                00008000   defined in Debug\stm8_interrupt_vector.o section .const
+_buf                    0000006a   defined in Debug\main.o section .ubsct
+_clear_matrix           0000817f   defined in Debug\main.o section .text
+_delay                  0000816e   defined in Debug\main.o section .text
+_eff111                 00000001   defined in Debug\main.o section .bsct, initialized
+_exit                   0000813b   defined in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8 section .text
+_fraim                  00000065   defined in Debug\main.o section .ubsct
+_fraim_out              00008195   defined in Debug\main.o section .text
+_i                      00000066   defined in Debug\main.o section .ubsct
+_ii                     00000064   defined in Debug\main.o section .bsct, initialized
+_iii                    00000063   defined in Debug\main.o section .bsct, initialized
+_l                      00000068   defined in Debug\main.o section .ubsct
+_main                   00008200   defined in Debug\main.o section .text
+                                   used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+_next                   00000000   defined in Debug\main.o section .bsct, initialized
+_next2                  000000cc   defined in Debug\main.o section .ubsct
+_raand                  0000813d   defined in Debug\main.o section .text
+_y                      00000069   defined in Debug\main.o section .ubsct
+c_x                     000000cd   defined in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)xreg.o section .ubsct
+                                   used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+c_y                     000000d0   defined in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)yreg.o section .ubsct
+                                   used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+f_NonHandledInterrupt   00008245   defined in Debug\stm8_interrupt_vector.o section .text
