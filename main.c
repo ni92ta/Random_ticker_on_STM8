@@ -41,38 +41,91 @@ unsigned int ip;
  {
          while(n > 10) n--;
  }
+ //====================================================================
+/* void I2C_WriteRegister(u8 u8_regAddr, u8 u8_NumByteToWrite, u8 *u8_DataBuffer)
+{
+  while((I2C->SR3 & 2) && tout())       									// Wait while the bus is busy
+  {
+    I2C->CR2 |= 2;                        								// STOP=1, generate stop
+    while((I2C->CR2 & 2) && tout());      								// wait until stop is performed
+  }
+  
+  I2C->CR2 |= 1;                        									// START=1, generate start
+  while(((I2C->SR1 & 1)==0) && tout()); 									// Wait for start bit detection (SB)
+  dead_time();                          									// SB clearing sequence
+  if(tout())
+  {
+    #ifdef TEN_BITS_ADDRESS															  // TEN_BIT_ADDRESS decalred in I2c_master_poll.h
+      I2C->DR = (u8)(((SLAVE_ADDRESS >> 7) & 6) | 0xF0);  // Send header of 10-bit device address (R/W = 0)
+      while(!(I2C->SR1 & 8) &&  tout());    							// Wait for header ack (ADD10)
+      if(tout())
+      {
+        I2C->DR = (u8)(SLAVE_ADDRESS);        						// Send lower 8-bit device address & Write 
+      }
+    #else
+      I2C->DR = (u8)(SLAVE_ADDRESS << 1);   							// Send 7-bit device address & Write (R/W = 0)
+    #endif
+  }
+  while(!(I2C->SR1 & 2) && tout());     									// Wait for address ack (ADDR)
+  dead_time();                          									// ADDR clearing sequence
+  I2C->SR3;
+  while(!(I2C->SR1 & 0x80) && tout());  									// Wait for TxE
+  if(tout())
+  {
+    I2C->DR = u8_regAddr;                 								// send Offset command
+  }
+  if(u8_NumByteToWrite)
+  {
+    while(u8_NumByteToWrite--)          									
+    {																											// write data loop start
+      while(!(I2C->SR1 & 0x80) && tout());  								// test EV8 - wait for TxE
+      I2C->DR = *u8_DataBuffer++;           								// send next data byte
+    }																											// write data loop end
+  }
+  while(((I2C->SR1 & 0x84) != 0x84) && tout()); 					// Wait for TxE & BTF
+  dead_time();                          									// clearing sequence
+  
+  I2C->CR2 |= 2;                        									// generate stop here (STOP=1)
+  while((I2C->CR2 & 2) && tout());      									// wait until stop is performed  
+}*/
 //============Инициализация микросхемы DC1307===============
 void DS1307init (void){//инициализация микросхемы
 
-I2C->CR1 |= (1<<0);//включаем I2C
+//  while((I2C->SR3 & 2) && 1)       									// Wait while the bus is busy
+ // {
+  //  I2C->CR2 |= 2;                        								// STOP=1, generate stop
+  //  while((I2C->CR2 & 2) 1);      								// wait until stop is performed
+ // }
+
+
+
+
+				/*	I2C->CR1 |= (1<<0);//включаем I2C
 					delay (50);//
 					I2C->CR2 |= (1<<0);//отправка посылки СТАРТ
-					//delay (50);//
+					delay (50);//
 					xxx = I2C->SR1;//Очистка бита ADDR чтением регистра SR3
-					//while(I2C->SR1 & (1 << 0) == 1){}//ждём установки стартового бита 1
-					while(I2C->SR1 & (1 << 0) != 1){}//ждём установки стартового бита 1
-					//delay (50);//
+					//while(I2C->SR1 & (1 << 0) != 1){}//ждём установки стартового бита 1
+					delay (50);//
 					I2C->DR = dev_addrw;//адрес часовой микросхемы - запись
-					//delay (50);//
+					while(I2C->SR1 & (1 << 1) == 1){}//ждём конца передачи адрес 1
+					while(I2C->CR2 & (1 << 2) == 1){}//получили ACK 1
+					delay (50);//
 					xxx = I2C->SR1;//Очистка бита ADDR чтением регистра SR3
 					xxx = I2C->SR3;//Очистка бита ADDR чтением регистра SR3
-					while(I2C->SR1 & (1 << 1) == 1){}//ждём конца передачи адрес 1
-					//delay (50);//
-          xxx = I2C->SR3;//Очистка бита ADDR чтением регистра SR3
-					//delay (50);//
+					
+					delay (50);//
+					while((I2C->SR1 & (1 << 2)) && (I2C->SR1 & (1 << 7)) == 1){}//
+         // xxx = I2C->SR3;//Очистка бита ADDR чтением регистра SR3
+					delay (50);//
 					I2C->DR = 0b00000111;//вызов регистра clock out  0b00000111
-					//delay (50);//
+					delay (50);//
           I2C->DR = 0b00010000;//отправка данных
-					//delay (50);//
+					delay (50);//
 					while(I2C->SR1 & (1 << 7) == 1){}//ждём освобождения регистра данных
-					//delay (50);//
+					delay (50);//
 					I2C->CR2 |= (1<<1);//отправка посылки СТОП
-					//delay (50);//
-
-									
-					
-					
-					
+					*/
 					
 					
 					/*
@@ -213,17 +266,25 @@ while (CLK->SWCR & (1<<1) == 1){}// Ждем готовности переключения
 	GPIOB->CR2 &= ~((1<<5) | (1<<4));//Скорость переключения - до 10 МГц.
 	//===================Настройка I2C========================
 		I2C->CR1 &= ~(1<<0);//отключаем I2C перед настройкой
-		I2C->FREQR = 12;//частота переферии 12МГц
+		I2C->FREQR = 8;//частота переферии 12МГц
+		I2C->CCRL = 40;//100kHz
+		I2C->CCRH = 0;//
 		I2C->TRISER = 9;//rise time 1000ns
-		I2C->CCRL = 80;//100kHz
-    I2C->CCRH = 0;//
-    I2C->ITR = 0;//disable all I2C interrupts
-	  
-		I2C->CR2 |= 4; // ACK
+		I2C->OARL = 0xA0;              // own address A0;
+		I2C->OARH |= 0x40;
+		I2C->ITR = 1;                  // enable error interrupts
+		I2C->CR2 |= 0x04;              // ACK=1, Ack enable
+		I2C->CR1 |= 0x01;              // PE=1
+		
+		
+		
+		//I2C->OARH |= (1<<6);
+		
+    
+    //I2C->ITR = 0;//disable all I2C interrupts
+		//I2C->CR2 |= 4;//ACK I2C->CR2 |= 4
+		//I2C->CR2 &= ~(1<<2); //ACK
 	  I2C->CR1 |= (1<<0);//включаем I2C
-
-	
-
 	//========================================================
 	raand();
 	GPIOA->ODR |= (1<<3);
