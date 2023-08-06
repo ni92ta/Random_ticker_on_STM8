@@ -5,15 +5,15 @@
  * Copyright (c) 2002-2005 STMicroelectronics
  */
 #include "stm8s.h"
-
+//==========================================================
 unsigned int next = 2;
 unsigned int next2;
 int eff111[36];
-/*unsigned char numbers[29] = {
-			 //0x0,0x70,0x88,0x70,0x0,//0
-			 //0x0,0x88,0xF8,0x8,0x0,//1
-			 //0x0,0x98,0xA8,0xC8,0x0,//2
-			 //0x0,0xA8,0xA8,0x70,0x0,//3
+unsigned char numbers[52] = {
+			 0x0,0x0,0x0,0x70,0x88,0x70,0x0,//0
+			 0x0,0x88,0xF8,0x8,0x0,//1
+			 0x0,0x98,0xA8,0xC8,0x0,//2
+			 0x0,0xA8,0xA8,0x70,0x0,0x0,0x0,//3
 			 0x0,0xE0,0x20,0xF8,//4
 			 0x0,0xE8,0xA8,0xB8,//5
 			 0x0,0x78,0xA8,0xB8,//6
@@ -21,9 +21,8 @@ int eff111[36];
 			 0x0,0xF8,0xA8,0xF8,//8
 			 0x0,0xE8,0xA8,0xF8,//9
 			 0x0,0xC0,0xD8,0x18//:
-	 };*/
+	 };
 int buf[36];
-//int buf[29];
 int iii = 0;
 int ii = 0;
 int y = 0;
@@ -33,61 +32,17 @@ int fraim;
 int x;
 int xx = 0;
 int xxx = 0;
+unsigned char sec;
+unsigned char min;
+unsigned char hour;
 unsigned int ip;
 #define dev_addrw 0b11010000 //запись 
 #define dev_addrr 0b11010001 //чтение 
-//=========================Задержка================================
+//=========================Задержка=========================
  void delay(int n)
  {
          while(n > 10) n--;
  }
- //====================================================================
-/* void I2C_WriteRegister(u8 u8_regAddr, u8 u8_NumByteToWrite, u8 *u8_DataBuffer)
-{
-  while((I2C->SR3 & 2) && tout())       									// Wait while the bus is busy
-  {
-    I2C->CR2 |= 2;                        								// STOP=1, generate stop
-    while((I2C->CR2 & 2) && tout());      								// wait until stop is performed
-  }
-  
-  I2C->CR2 |= 1;                        									// START=1, generate start
-  while(((I2C->SR1 & 1)==0) && tout()); 									// Wait for start bit detection (SB)
-  dead_time();                          									// SB clearing sequence
-  if(tout())
-  {
-    #ifdef TEN_BITS_ADDRESS															  // TEN_BIT_ADDRESS decalred in I2c_master_poll.h
-      I2C->DR = (u8)(((SLAVE_ADDRESS >> 7) & 6) | 0xF0);  // Send header of 10-bit device address (R/W = 0)
-      while(!(I2C->SR1 & 8) &&  tout());    							// Wait for header ack (ADD10)
-      if(tout())
-      {
-        I2C->DR = (u8)(SLAVE_ADDRESS);        						// Send lower 8-bit device address & Write 
-      }
-    #else
-      I2C->DR = (u8)(SLAVE_ADDRESS << 1);   							// Send 7-bit device address & Write (R/W = 0)
-    #endif
-  }
-  while(!(I2C->SR1 & 2) && tout());     									// Wait for address ack (ADDR)
-  dead_time();                          									// ADDR clearing sequence
-  I2C->SR3;
-  while(!(I2C->SR1 & 0x80) && tout());  									// Wait for TxE
-  if(tout())
-  {
-    I2C->DR = u8_regAddr;                 								// send Offset command
-  }
-  if(u8_NumByteToWrite)
-  {
-    while(u8_NumByteToWrite--)          									
-    {																											// write data loop start
-      while(!(I2C->SR1 & 0x80) && tout());  								// test EV8 - wait for TxE
-      I2C->DR = *u8_DataBuffer++;           								// send next data byte
-    }																											// write data loop end
-  }
-  while(((I2C->SR1 & 0x84) != 0x84) && tout()); 					// Wait for TxE & BTF
-  dead_time();                          									// clearing sequence
-  
-  I2C->CR2 |= 2;                        									// generate stop here (STOP=1)
-  while((I2C->CR2 & 2) && tout());      									// wait until stop is performed  
-}*/
 //============Инициализация микросхемы DC1307===============
 void DS1307init (void){//инициализация микросхемы
 
@@ -96,8 +51,6 @@ void DS1307init (void){//инициализация микросхемы
   //  I2C->CR2 |= 2;                        								// STOP=1, generate stop
   //  while((I2C->CR2 & 2) 1);      								// wait until stop is performed
  // }
-
-
 
 
 					I2C->CR1 |= (1<<0);//включаем I2C
@@ -141,29 +94,9 @@ void DS1307init (void){//инициализация микросхемы
 					I2C->CR2 |= (1<<1);//отправка посылки СТОП		
 					
 					
+		
+					
 					return;
-					
-					
-	/*				
-//while (I2C->SR3 & (1 << 1) !=1){}//ждём освобождения шины I2C в 0
-					delay (500);//
-I2C->CR2 |= (1<<0);//отправка посылки СТАРТ
-					delay (500);//
-while(I2C->SR1 & (1 << 0) == 1){}//ждём установки стартового бита 1
-
-					delay (500);//
-I2C->DR = dev_addrw;//адрес часовой микросхемы - запись
-					delay (500);//
-while(I2C->SR1 & (1 << 1) == 1){}//ждём конца передачи адрес 1
-
-I2C->SR3;//Очистка бита ADDR чтением регистра SR3
-while(I2C->SR1 & (1 << 7) == 1){}//ждём освобождения регистра данных	
-I2C->DR = 0b00000111;//вызов регистра clock out
-I2C->DR = 0b00010000;//отправка данных
-while (!((I2C->SR1 & (1 << 7) && I2C->SR1 & (1 << 2)))){}//Ловим момент, когда DR освободился и данные попали в сдвиговый регистр
-I2C->CR2 |= (1<<1);//отправка посылки СТОП
-*/
-
 
 		/*delay_ms(2);
     i2c_start ();//отправка посылки СТАРТ
@@ -179,7 +112,7 @@ I2C->CR2 |= (1<<1);//отправка посылки СТОП
     i2c_stop ();*/	
 }
 //=================================================================
-	 void raand(void)
+	void raand(void)
 		 {
 		 unsigned char i2;
 			int xy;
@@ -190,12 +123,10 @@ I2C->CR2 |= (1<<1);//отправка посылки СТОП
 		   next2 = (next / 655) * 276;// next2 = (next / 65536) * 2768
 		   xy = next2 % (327 - 8 + 1) + 8;//x = next2 % (32767 - 8 + 1) + 8
 		   if (xy > 327) xy = xy - 327;//if (x > 32767) x = x - 32767;
-			 //xy = xy;//(xy & 0b11111000);
 			 
-		 eff111[i2] = xy;//0b01010111;
+		 eff111[i2] = xy;//0
 		 }
-		 }
-
+	}
  //=====================
  void clear_matrix(void)
  {
@@ -205,42 +136,47 @@ I2C->CR2 |= (1<<1);//отправка посылки СТОП
  	 }
  }
 //==========================ВЫВОД ФРЕЙМА======================================
-	 	 	void fraim_out (int o, int e){
-										int ipp;
-	 	 			if (1) {
-	 iii++;
-	 	 			buf[35] = eff111[0];//Считали 1ю колонку в буфер
-					//buf[28] = numbers[0];//Считали 1ю колонку в буфер
+	void fraim_out (int o, int e){				
+	 	 			if (o == 0){
+						iii++;
+						buf[35] = eff111[0];//Считали 1ю колонку в буфер
+						for ( ii = 0; ii < 35; ii++){
+						eff111[ii] = eff111[ii + 1];//Сдвинули матрицу на один столбец влево
+						}
+						eff111[35] = buf[35];//Записали содержимое буфера (первую колонку) в конец матрицы
+					}
+					if (o == 1){
+						iii++;
+						buf[28] = numbers[0];//Считали 1ю колонку в буфер
+						for ( ii = 0; ii < 28; ii++){
+						numbers[ii] = numbers[ii + 1];//Сдвинули матрицу на один столбец влево
+						}
+						numbers[28] = buf[28];
+				    if (iii == 14) fraim = 0;						
+					}
 
-	 	 			for ( ii = 0; ii < 35; ii++)
-					//for ( ii = 0; ii < 28; ii++)
-	 	 				{
-	 	 				eff111[ii] = eff111[ii + 1];//Сдвинули матрицу на один столбец влево
-						//numbers[ii] = numbers[ii + 1];//Сдвинули матрицу на один столбец влево
-	 	 				 }
-	 	 			eff111[35] = buf[35];//Записали содержимое буфера (первую колонку) в конец матрицы
-					//numbers[28] = buf[28];
-	 	 		
-}
-for ( ip = 0; ip < 400; ++ip) 
-				{
-          GPIOC->ODR = eff111[l];//
-					//GPIOC->ODR = numbers[l];
+	for ( ip = 0; ip < 400; ++ip){
+					if (o == 0){
+						GPIOC->ODR = eff111[l];//	
+					}
+					else{
+						GPIOC->ODR = numbers[l];	
+					}
 					GPIOD->ODR &= ~(1<<6);
-					delay (500);//
+					delay (700);//скорость бега строки
 					GPIOD->ODR |= (1<<6);
 					GPIOC->ODR &= ~((1<<7) | (1<<6) | (1<<5) | (1<<4) | (1<<3));//очистка строк ++
 					l--;
 	 	 			y++;
-	 	 			if (y == 8) {
+	 	 			if (y == 8){
 	 	 				y = 0;
 	 	 				l = 8;
-				GPIOA->ODR |= (1<<3);
-				delay (20);
-				GPIOA->ODR &= ~(1<<3);
+						GPIOA->ODR |= (1<<3);//переключение столбца CLOCK ИЕ8
+						delay (20);
+						GPIOA->ODR &= ~(1<<3);//переключение столбца CLOCK ИЕ8
 	 	 			}
-			  }
-	 	 	}
+	}
+	}
 //==============================================================================
 int main(void)
 {
@@ -309,23 +245,68 @@ while (CLK->SWCR & (1<<1) == 1){}// Ждем готовности переключения
 	if (iii > 36) {
 	 			raand();
 	 			iii = 0;
+				fraim = 1;
 	 		}
-			
-			
-		while (!((GPIOD->IDR & (1 << 5)))){
-		//	DS1307init();
-			
-		} //при 0 стоим
+		while (!((GPIOD->IDR & (1 << 5)))){//нажатие кнопки
+		
+					I2C->CR1 |= (1<<0);//включаем I2C
+					I2C->CR2 |= (1<<0);//отправка посылки СТАРТ
+					xxx = I2C->SR1;//Очистка бита ADDR чтением регистра SR3
+					//while(I2C->SR1 & (1 << 0) != 1){}//ждём установки стартового бита 1
+					delay (18);//delay (50);
+					I2C->DR = dev_addrw;//адрес часовой микросхемы - запись
+					while(I2C->SR1 & (1 << 1) == 1){}//ждём конца передачи адрес 1
+					while(I2C->CR2 & (1 << 2) == 1){}//получили ACK 1
+					delay (100);//delay (100);
+					xxx = I2C->SR1;//Очистка бита ADDR чтением регистра SR3
+					xxx = I2C->SR3;//Очистка бита ADDR чтением регистра SR3
+					while((I2C->SR1 & (1 << 2)) && (I2C->SR1 & (1 << 7)) == 1){}//
+          xxx = I2C->SR3;//Очистка бита ADDR чтением регистра SR3
+					I2C->DR = 0b00000000;//вызов регистра clock out  0b00000111
+					delay (105);//delay (250);
+          //I2C->DR = 0b00000000;//отправка данных0b00010000
+					while(I2C->SR1 & (1 << 7) == 1){}//ждём освобождения регистра данны
+					I2C->CR2 |= (1<<1);//отправка посылки СТОП
+		
+		delay (5000);//delay (250);
 		
 		
-		//while ((GPIOD->IDR & (1 << 5))){} //при 1 стоим
+		
+					I2C->CR2 |= (1<<0);//отправка посылки СТАРТ
+					xxx = I2C->SR1;//Очистка бита ADDR чтением регистра SR3
+					//while(I2C->SR1 & (1 << 0) != 1){}//ждём установки стартового бита 1
+					delay (18);//delay (50);
+					I2C->DR = dev_addrr;//адрес часовой микросхемы - запись
+					while(I2C->SR1 & (1 << 1) == 1){}//ждём конца передачи адрес 1
+					while(I2C->CR2 & (1 << 2) == 1){}//получили ACK 1
+					delay (100);//delay (100);
+					xxx = I2C->SR1;//Очистка бита ADDR чтением регистра SR3
+					xxx = I2C->SR3;//Очистка бита ADDR чтением регистра SR3
+					while((I2C->SR1 & (1 << 2)) && (I2C->SR1 & (1 << 7)) == 1){}//
+          xxx = I2C->SR3;//Очистка бита ADDR чтением регистра SR3
+					I2C->DR = 0b00000000;//вызов регистра clock out  0b00000111
+					while(I2C->SR1 & (1 << 7) == 1){}//ждём освобождения регистра данны
+					delay (500);//delay (250);
+          sec = I2C->DR;//
+					while(I2C->SR1 & (1 << 7) == 1){}//ждём освобождения регистра данны
+					delay (500);//delay (250);
+					min = I2C->DR;//
+					while(I2C->SR1 & (1 << 7) == 1){}//ждём освобождения регистра данны
+					delay (500);//delay (250);
+					hour = I2C->DR;//
+					while(I2C->SR1 & (1 << 7) == 1){}//ждём освобождения регистра данны
+					delay (500);//delay (250);
+					while(I2C->SR1 & (1 << 7) == 1){}//ждём освобождения регистра данны
+					I2C->CR2 |= (1<<1);//отправка посылки СТОП
+
+					delay (5000);//delay (250);
+		}
+		
+		
 		fraim_out(fraim, 0);
-		//	DS1307init();
-			//fraim_out(fraim, 0);
 
 
 
-		//raand();
 		/*y++;
 				GPIOC->ODR |= (1<<7) | (1<<6) | (1<<5) | (1<<4) | (1<<3);
 				GPIOD->ODR &= ~(1<<6);
