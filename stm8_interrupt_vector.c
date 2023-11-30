@@ -18,6 +18,8 @@ struct interrupt_vector {
 }
 
 extern void _stext();     /* startup routine */
+extern @far @interrupt void EXTI3_IRQHandler (void);
+				
 
 struct interrupt_vector const _vectab[] = {
 	{0x82, (interrupt_handler_t)_stext}, /* reset */
@@ -28,7 +30,7 @@ struct interrupt_vector const _vectab[] = {
 	{0x82, NonHandledInterrupt}, /* irq3  */
 	{0x82, NonHandledInterrupt}, /* irq4  */
 	{0x82, NonHandledInterrupt}, /* irq5  */
-	{0x82, NonHandledInterrupt}, /* irq6  */
+	{0x82, (interrupt_handler_t)EXTI3_IRQHandler}, /* irq6 (FOR PRTD EXTERNAL INTERRUPT) */	
 	{0x82, NonHandledInterrupt}, /* irq7  */
 	{0x82, NonHandledInterrupt}, /* irq8  */
 	{0x82, NonHandledInterrupt}, /* irq9  */
