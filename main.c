@@ -190,7 +190,16 @@ void DS1307init (void){//
  	 }
  }
 //==========================ВЫВОД ФРЕЙМА====================
-	void fraim_out (int o, int e){				
+	void fraim_out (int o, int e){
+
+			if (iii > 48) {//Перезапись массива
+		//DS07read();
+	 			raand();
+	 			iii = 0;
+				fraim = 1;
+	 		}
+
+
 	 	 			//if (o == 0){
 						iii++;
 						buf[35] = eff111[0];//Считали 1ю колонку в буфер
@@ -364,14 +373,10 @@ rim();
 
 	while (1){
 		unsigned char iu;
-	if (iii > 48) {//Перезапись массива
-		DS07read();
-	 			raand();
-	 			iii = 0;
-				fraim = 1;
-	 		}
+
 
 		fraim_out(fraim, 0);
+
 swres = 0;//Разрешение переключения скорости
 
 
