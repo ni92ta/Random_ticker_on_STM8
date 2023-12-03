@@ -12,6 +12,7 @@ unsigned int next2;
 //unsigned char *address_1 = (unsigned char*)0x4000;// = 0x4000; присваиваем адрес в ПЗУ (EEPROM) переменной address
 unsigned char alar;
 int eff111[36];
+//int eff222[36];
 /*unsigned char numbers[52] = {
 			 0x0,0x0,0x0,0x70,0x88,0x70,0x0,//0
 			 0x0,0x88,0xF8,0x8,0x0,//1
@@ -73,9 +74,10 @@ int xxx = 0;
 unsigned char sec;
 unsigned char min;
 unsigned char hour;
-unsigned char SB2;//Переменная счёта нажатий кнопки SB2
+unsigned char SB1;//Переменная счёта нажатий кнопки SB1
+unsigned char swres = 0;//Переменная разрешения нажатий кнопки SB1
 unsigned int ip;
-unsigned int speed = 450;//Переменная для хранения значения скорости строки
+unsigned int speed = 100;//Переменная для хранения значения скорости строки 450
 unsigned int butcount = 0;//Переменная для функции подавления дребезга
 #define dev_addrw 0b11010000 //запись 
 #define dev_addrr 0b11010001 //чтение
@@ -88,14 +90,15 @@ unsigned int butcount = 0;//Переменная для функции подавления дребезга
 @far @interrupt void EXTI3_IRQHandler(void) 
 {
 	butcount = 0;
-	SB2 ++;
-	if (SB2 >= 5) SB2 = 0;
-	while (!((GPIOD->IDR & (1 << 2)))){//нажатие кнопки SB2 изменение скорости
-	if (butcount < 1000){
+	if (swres == 0) SB1 ++;
+	if (SB1 >= 5) SB1 = 0;
+	while (!((GPIOD->IDR & (1 << 1)))){//нажатие кнопки SB2 изменение скорости
+	if (butcount < 10000){
 			butcount ++;
 					}
 		else {
-	switch (SB2){
+			swres = 1;
+	switch (SB1){
 				case 0:
 		speed = 450;
 		break;
@@ -112,7 +115,6 @@ unsigned int butcount = 0;//Переменная для функции подавления дребезга
 		speed = 50;
 		break;
 	}
-	GPIOD->ODR |= (1<<4);
 }
 }
 return;
@@ -362,45 +364,17 @@ rim();
 
 	while (1){
 		unsigned char iu;
-	if (iii > 36) {
+	if (iii > 48) {//Перезапись массива
 		DS07read();
 	 			raand();
 	 			iii = 0;
 				fraim = 1;
 	 		}
-//==========================================================
-	/*	while (!((GPIOD->IDR & (1 << 1)))){//нажатие кнопки SB1 изменение скорости
-		//unsigned char speed_in = 0;
-		if (butcount < 1000){
-			butcount ++;
-		}
-		else {
-		//if (speed_in == 0){
-			//speed_in = 1;
-			speed += 100;
-	//}
-		if (speed == 2000) speed = 100;
-		}
-	}*/
-//==========================================================
+
 		fraim_out(fraim, 0);
+swres = 0;//Разрешение переключения скорости
 
 
-		/*y++;
-				GPIOC->ODR |= (1<<7) | (1<<6) | (1<<5) | (1<<4) | (1<<3);
-				GPIOD->ODR &= ~(1<<6);
-				delay (30000);
-				delay (30000);
-        GPIOC->ODR &= ~((1<<7) | (1<<6) | (1<<5) | (1<<4) | (1<<3));
-				GPIOD->ODR |= (1<<6);
-				delay (30000);
-				delay (30000);
-				if (y == 8){
-				y = 0;
-				GPIOA->ODR |= (1<<3);
-				delay (20);
-				GPIOA->ODR &= ~(1<<3);
-				}*/
 				/*
 				Рабочая
 		I2C->CR1 &= ~(1<<0);//отключаем I2C перед настройкой
