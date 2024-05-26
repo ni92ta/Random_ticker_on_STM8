@@ -34,8 +34,8 @@
   87  001d 00            	dc.b	page(f_NonHandledInterrupt)
   88  001e 0000          	dc.w	f_NonHandledInterrupt
   89  0020 82            	dc.b	130
-  91  0021 00            	dc.b	page(f_NonHandledInterrupt)
-  92  0022 0000          	dc.w	f_NonHandledInterrupt
+  91  0021 00            	dc.b	page(f_EXTI3_IRQHandler)
+  92  0022 0000          	dc.w	f_EXTI3_IRQHandler
   93  0024 82            	dc.b	130
   95  0025 00            	dc.b	page(f_NonHandledInterrupt)
   96  0026 0000          	dc.w	f_NonHandledInterrupt
@@ -106,6 +106,7 @@
  183  007d 00            	dc.b	page(f_NonHandledInterrupt)
  184  007e 0000          	dc.w	f_NonHandledInterrupt
  235                     	xdef	__vectab
- 236                     	xref	__stext
- 237                     	xdef	f_NonHandledInterrupt
- 256                     	end
+ 236                     	xref	f_EXTI3_IRQHandler
+ 237                     	xref	__stext
+ 238                     	xdef	f_NonHandledInterrupt
+ 257                     	end
